@@ -28,7 +28,7 @@ class ConstSingleton {
         var success:Bool
         if constant.isEmpty || constant[type] == nil{
             var newConst = [key : value]
-            if let unwrappedPreviousValue = constant.updateValue(newConst, forKey: key) {
+            if let unwrappedPreviousValue = constant.updateValue(newConst, forKey: type) {
                 println("Replaced the previous value: \(unwrappedPreviousValue)")
             } else{
                 println("Added a new value")
