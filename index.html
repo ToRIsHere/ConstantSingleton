@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Constantswiftsingleton by TorIsHere</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Constantswiftsingleton</h1>
+        <p>Global constant variable, implemented in Swift, using Singleton pattern</p>
+
+        <p class="view"><a href="https://github.com/TorIsHere/ConstantSwiftSingleton">View the Project on GitHub <small>TorIsHere/ConstantSwiftSingleton</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/TorIsHere/ConstantSwiftSingleton/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/TorIsHere/ConstantSwiftSingleton/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/TorIsHere/ConstantSwiftSingleton">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="constant-singleton-by-swift" class="anchor" href="#constant-singleton-by-swift" aria-hidden="true"><span class="octicon octicon-link"></span></a>Constant Singleton by Swift</h1>
+
+<p><a href="http://www.galloway.me.uk/tutorials/singleton-classes/">Singleton pattern</a> is a design pattern that restricts 
+the instance of a class to only one object. </p>
+
+<h2>
+<a id="when-to-use" class="anchor" href="#when-to-use" aria-hidden="true"><span class="octicon octicon-link"></span></a>When to use</h2>
+
+<p>When you wanted to share data between different parts of code, instead of having to pass the data around. For example,
+global setting constant such as locale, language, currency etc.</p>
+
+<h2>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h2>
+
+<p>Using <a href="https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man3/dispatch_once_f.3.html">dispatch_once</a> (Objective-C approach), if you are interested <a href="http://www.galloway.me.uk/tutorials/singleton-classes/">Singletons in Objective-C</a>. Like the name say, this function will execute block only once. We utilize this by put initialise code inside dispatch_once.</p>
+
+<div class="highlight highlight-swift"><pre><span class="pl-st">class</span> Singleton {
+
+  <span class="pl-st">class</span> <span class="pl-st">var</span> sharedInstance <span class="pl-k">:</span> Singleton {
+    <span class="pl-st">struct</span> Static {
+        <span class="pl-k">static</span> <span class="pl-st">var</span> onceToken <span class="pl-k">:</span> dispatch_once_t <span class="pl-k">=</span> <span class="pl-c1">0</span>
+        <span class="pl-k">static</span> <span class="pl-st">var</span> instance <span class="pl-k">:</span> Const? <span class="pl-k">=</span> nil
+    }
+    dispatch_once(<span class="pl-k">&amp;</span>Static<span class="pl-k">.</span>onceToken) {
+        Static<span class="pl-k">.</span>instance <span class="pl-k">=</span> Const()
+    }
+    <span class="pl-k">return</span> Static<span class="pl-k">.</span>instance<span class="pl-k">!</span>
+  }
+
+}</pre></div>
+
+<h3>
+<a id="using-example" class="anchor" href="#using-example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using Example</h3>
+
+<div class="highlight highlight-swift"><pre><span class="pl-st">var</span> global_instance:Singleton <span class="pl-k">=</span> Singleton<span class="pl-k">.</span>sharedInstance</pre></div>
+
+<p>What happened here is when we call <code>Singleton.sharedInstance</code>, Static.instance will be initialised once and only once. Later when we try to access <code>Singleton.sharedInstance</code>, we shall get an exact same instance.  </p>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<pre><code>- Const
+  - Category1
+    - key : value 
+    - key : value 
+    - key : value 
+  - Category2
+    - key : value 
+    - key : value 
+  - Category3
+    - key : value 
+    - key : value 
+    - key : value 
+</code></pre>
+
+<div class="highlight highlight-swift"><pre><span class="pl-st">class</span> ConstSingleton {
+    private <span class="pl-st">var</span> constant <span class="pl-k">=</span> <span class="pl-s3">Dictionary</span><span class="pl-k">&lt;</span><span class="pl-s3">String</span>, <span class="pl-s3">Dictionary</span><span class="pl-k">&lt;</span><span class="pl-s3">String</span>,<span class="pl-s3">String</span><span class="pl-k">&gt;&gt;</span>()
+
+    <span class="pl-st">func</span> <span class="pl-en">getConst</span>(type:<span class="pl-s3">String</span>, key: <span class="pl-s3">String</span>) <span class="pl-k">-&gt;</span> <span class="pl-s3">String</span>? {
+        <span class="pl-k">if</span> constant<span class="pl-k">.</span>isEmpty <span class="pl-k">||</span> constant[type] <span class="pl-k">==</span> nil{
+            <span class="pl-k">return</span> nil
+        }
+        <span class="pl-k">else</span> {
+            <span class="pl-st">var</span> myConst <span class="pl-k">=</span> constant[type]
+            <span class="pl-k">if</span> myConst?[key] <span class="pl-k">!=</span> nil {
+                <span class="pl-k">return</span> myConst?[key]
+            }
+        }
+        <span class="pl-k">return</span> nil
+    }
+
+    <span class="pl-st">func</span> <span class="pl-en">setConst</span>(type:<span class="pl-s3">String</span>, key: <span class="pl-s3">String</span>, value: <span class="pl-s3">String</span>) <span class="pl-k">-&gt;</span> <span class="pl-s3">Bool</span>? {
+        <span class="pl-st">var</span> success:<span class="pl-s3">Bool</span>
+        <span class="pl-k">if</span> constant<span class="pl-k">.</span>isEmpty <span class="pl-k">||</span> constant[type] <span class="pl-k">==</span> nil{
+            <span class="pl-st">var</span> newConst <span class="pl-k">=</span> [key <span class="pl-k">:</span> value]
+            <span class="pl-k">if</span> <span class="pl-st">let</span> unwrappedPreviousValue <span class="pl-k">=</span> constant<span class="pl-k">.</span>updateValue(newConst, forKey: type) {
+                println(<span class="pl-s1"><span class="pl-pds">"</span>Replaced the previous value: <span class="pl-pse">\(</span><span class="pl-s2">unwrappedPreviousValue</span><span class="pl-pse">)</span><span class="pl-pds">"</span></span>)
+            } <span class="pl-k">else</span>{
+                println(<span class="pl-s1"><span class="pl-pds">"</span>Added a new value<span class="pl-pds">"</span></span>)
+            }
+        }
+        <span class="pl-k">else</span>{
+            <span class="pl-k">if</span> <span class="pl-st">let</span> unwrappedPreviousValue <span class="pl-k">=</span> constant[type]?<span class="pl-k">.</span>updateValue(value, forKey: key) {
+                println(<span class="pl-s1"><span class="pl-pds">"</span>Replaced the previous value: <span class="pl-pse">\(</span><span class="pl-s2">unwrappedPreviousValue</span><span class="pl-pse">)</span><span class="pl-pds">"</span></span>)
+            } <span class="pl-k">else</span> {
+                println(<span class="pl-s1"><span class="pl-pds">"</span>Added a new value<span class="pl-pds">"</span></span>)
+            }
+
+        }
+        <span class="pl-k">return</span> <span class="pl-c1">true</span>
+    }
+
+    <span class="pl-st">class</span> <span class="pl-st">var</span> sharedInstance <span class="pl-k">:</span> ConstSingleton {
+        <span class="pl-st">struct</span> Static {
+            <span class="pl-k">static</span> <span class="pl-st">var</span> onceToken <span class="pl-k">:</span> dispatch_once_t <span class="pl-k">=</span> <span class="pl-c1">0</span>
+            <span class="pl-k">static</span> <span class="pl-st">var</span> instance <span class="pl-k">:</span> ConstSingleton? <span class="pl-k">=</span> nil
+        }
+        dispatch_once(<span class="pl-k">&amp;</span>Static<span class="pl-k">.</span>onceToken) {
+            Static<span class="pl-k">.</span>instance <span class="pl-k">=</span> ConstSingleton()
+        }
+        <span class="pl-k">return</span> Static<span class="pl-k">.</span>instance<span class="pl-k">!</span>
+    }
+}</pre></div>
+
+<p>Ps. Sorry for my English : )</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/TorIsHere">TorIsHere</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
